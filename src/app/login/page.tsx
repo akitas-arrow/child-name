@@ -1,14 +1,39 @@
-import { login, signup } from "@/app/login/actions";
+import { login } from "@/app/login/actions";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
   return (
     <form>
-      <label htmlFor="email">Email:</label>
-      <input id="email" name="email" type="email" required />
-      <label htmlFor="password">Password:</label>
-      <input id="password" name="password" type="password" required />
-      <button formAction={login}>Log in</button>
-      <button formAction={signup}>Sign up</button>
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>ログイン</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-2">
+              <Label htmlFor="email">メールアドレス</Label>
+              <Input id="email" name="email" type="email" required />
+              <Label htmlFor="password">パスワード</Label>
+              <Input id="password" name="password" type="password" required />
+              {/* <button formAction={signup}>Sign up</button> */}
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button formAction={login} className="w-full">
+            ログイン
+          </Button>
+        </CardFooter>
+      </Card>
     </form>
   );
 }
