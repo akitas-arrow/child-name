@@ -85,11 +85,7 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <Label htmlFor="name">名前</Label>
-            <Input
-              id="name"
-              {...register("name")}
-              placeholder="例：礼、葉、心"
-            />
+            <Input id="name" {...register("name")} placeholder="例：心" />
             {errors.name && (
               <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
             )}
@@ -100,7 +96,7 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
             <Input
               id="reading"
               {...register("reading")}
-              placeholder="例：れい、よう、こころ"
+              placeholder="例：こころ"
               className={errors.reading ? "border-red-500" : ""}
             />
             {errors.reading && (

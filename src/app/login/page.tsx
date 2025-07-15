@@ -1,5 +1,5 @@
 import { login } from "@/app/login/actions";
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import {
   Card,
   CardContent,
@@ -12,28 +12,30 @@ import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
   return (
-    <form>
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>ログイン</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="email">メールアドレス</Label>
-              <Input id="email" name="email" type="email" required />
-              <Label htmlFor="password">パスワード</Label>
-              <Input id="password" name="password" type="password" required />
-              {/* <button formAction={signup}>Sign up</button> */}
+    <div className="flex h-screen items-center justify-center">
+      <form className="w-full max-w-sm">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>ログイン</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="email">メールアドレス</Label>
+                <Input id="email" name="email" type="email" required />
+                <Label htmlFor="password">パスワード</Label>
+                <Input id="password" name="password" type="password" required />
+                {/* <button formAction={signup}>Sign up</button> */}
+              </div>
             </div>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button formAction={login} className="w-full">
-            ログイン
-          </Button>
-        </CardFooter>
-      </Card>
-    </form>
+          </CardContent>
+          <CardFooter>
+            <LoadingButton formAction={login} className="w-full">
+              ログイン
+            </LoadingButton>
+          </CardFooter>
+        </Card>
+      </form>
+    </div>
   );
 }

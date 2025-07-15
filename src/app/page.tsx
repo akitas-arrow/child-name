@@ -20,7 +20,9 @@ export default async function Home() {
           <CardHeader>
             <div className="flex items-center justify-center gap-3 mb-2">
               <Baby className="w-8 h-8 text-pink-500" />
-              <CardTitle className="text-3xl">子どもの名前募集</CardTitle>
+              <CardTitle className="text-2xl lg:text-3xl">
+                子どもの名前募集
+              </CardTitle>
               <Baby className="w-8 h-8 text-blue-500" />
             </div>
             <p className="text-muted-foreground">
