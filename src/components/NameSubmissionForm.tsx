@@ -12,6 +12,9 @@ import {
 } from "./ui/select";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 
@@ -26,63 +29,50 @@ type Props = {
   submitters: Submitter[];
 };
 
+const schema = z.object({
+  name: z
+    .string()
+    .min(1, "名前は必須です")
+    .max(1, "名前は1文字で入力してください"),
+  reading: z
+    .string()
+    .min(1, "読み方は必須です")
+    .regex(/^[あ-ん]+$/, "ひらがなのみで入力してください"),
+  gender: z.enum(["male", "female", "unisex"], "性別を選択してください"),
+  meaning: z.string().optional(),
+  submitter_id: z.string().min(1, "提案者は必須です"),
+});
+
+type FormValues = z.infer<typeof schema>;
+
 export const NameSubmissionForm = ({ submitters }: Props) => {
   const supabase = createClient();
-  const [name, setName] = useState("");
-  const [reading, setReading] = useState("");
-  const [gender, setGender] = useState("");
-  const [meaning, setMeaning] = useState("");
-  const [submitterId, setSubmitterId] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+      reading: "",
+      gender: undefined,
+      meaning: "",
+      submitter_id: "",
+    },
+  });
 
-  const onSubmit = async (data: {
-    name: string;
-    reading: string;
-    meaning: string;
-    gender: string;
-    submitter_id: string;
-  }) => {
+  const onSubmit: (data: FormValues) => Promise<void> = async (data) => {
     const { error } = await supabase.from("name_suggestions").insert(data);
     if (error) {
       alert("名前の提案に失敗しました。もう一度お試しください。");
+    } else {
+      reset();
     }
   };
-
-  // ひらがなのみを許可する関数
-  const isHiragana = (str: string): boolean => {
-    return /^[あ-ん]*$/.test(str);
-  };
-
-  const handleReadingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // すべての文字の入力を許可
-    setReading(value);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (
-      name.trim() &&
-      reading.trim() &&
-      gender &&
-      submitterId &&
-      isHiragana(reading.trim())
-    ) {
-      onSubmit({
-        name: name.trim(),
-        reading: reading.trim(),
-        gender,
-        meaning: meaning.trim(),
-        submitter_id: submitterId,
-      });
-      setName("");
-      setReading("");
-      setGender("");
-      setMeaning("");
-      setSubmitterId("");
-    }
-  };
-
-  const isReadingValid = reading === "" || isHiragana(reading);
 
   return (
     <Card className="w-full max-w-md">
@@ -90,38 +80,44 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
         <CardTitle>名前を提案する</CardTitle>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <Label htmlFor="name">名前</Label>
             <Input
               id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              {...register("name")}
               placeholder="例：礼、葉、心"
-              required
             />
+            {errors.name && (
+              <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           <div>
             <Label htmlFor="reading">読み方（ひらがなのみ）</Label>
             <Input
               id="reading"
-              value={reading}
-              onChange={handleReadingChange}
-              placeholder="例：たろう、はなこ"
-              required
-              className={!isReadingValid ? "border-red-500" : ""}
+              {...register("reading")}
+              placeholder="例：れい、よう、こころ"
+              className={errors.reading ? "border-red-500" : ""}
             />
-            {!isReadingValid && (
+            {errors.reading && (
               <p className="text-sm text-red-500 mt-1">
-                ひらがなのみで入力してください
+                {errors.reading.message}
               </p>
             )}
           </div>
 
           <div>
             <Label htmlFor="gender">性別</Label>
-            <Select value={gender} onValueChange={setGender} required>
+            <Select
+              value={watch("gender")}
+              onValueChange={(val) =>
+                setValue("gender", val as "male" | "female" | "unisex", {
+                  shouldValidate: true,
+                })
+              }
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="性別を選択してください" />
               </SelectTrigger>
@@ -131,11 +127,21 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
                 <SelectItem value="unisex">どちらでも</SelectItem>
               </SelectContent>
             </Select>
+            {errors.gender && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.gender.message}
+              </p>
+            )}
           </div>
 
           <div>
             <Label htmlFor="submitter_id">提案者の名前</Label>
-            <Select value={submitterId} onValueChange={setSubmitterId} required>
+            <Select
+              value={watch("submitter_id")}
+              onValueChange={(val) =>
+                setValue("submitter_id", val, { shouldValidate: true })
+              }
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="提案者を選択してください" />
               </SelectTrigger>
@@ -147,14 +153,18 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
                 ))}
               </SelectContent>
             </Select>
+            {errors.submitter_id && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.submitter_id.message}
+              </p>
+            )}
           </div>
 
           <div>
             <Label htmlFor="meaning">理由・由来（任意）</Label>
             <Textarea
               id="meaning"
-              value={meaning}
-              onChange={(e) => setMeaning(e.target.value)}
+              {...register("meaning")}
               placeholder="この名前を提案する理由や由来があれば教えてください"
               rows={3}
             />
