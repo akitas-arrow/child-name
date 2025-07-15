@@ -15,8 +15,8 @@ import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 type Submitter = {
   id: string;
@@ -47,6 +47,7 @@ type FormValues = z.infer<typeof schema>;
 
 export const NameSubmissionForm = ({ submitters }: Props) => {
   const supabase = createClient();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -71,6 +72,7 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
       alert("名前の提案に失敗しました。もう一度お試しください。");
     } else {
       reset();
+      router.refresh(); // フォーム送信成功時にRSCを再取得
     }
   };
 
