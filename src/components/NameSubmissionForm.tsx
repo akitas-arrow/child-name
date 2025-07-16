@@ -17,6 +17,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { Loader2Icon } from "lucide-react";
 
 type Submitter = {
   id: string;
@@ -55,6 +56,7 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
     formState: { errors },
     setValue,
     watch,
+    formState: { isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -168,7 +170,8 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
             />
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting && <Loader2Icon className="animate-spin" />}
             名前を提案する
           </Button>
         </form>
