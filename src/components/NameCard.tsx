@@ -1,4 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Badge } from "./ui/badge";
 
 interface Name {
@@ -42,18 +49,14 @@ export function NameCard({ nameData }: NameCardProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl">{nameData.name}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              ({nameData.reading})
-            </p>
-          </div>
+      <CardHeader>
+        <CardTitle className="text-xl">{nameData.name}</CardTitle>
+        <CardDescription>({nameData.reading})</CardDescription>
+        <CardAction>
           <Badge className={getCategoryColor(nameData.gender)}>
             {getCategoryLabel(nameData.gender)}
           </Badge>
-        </div>
+        </CardAction>
       </CardHeader>
       <CardContent>
         {nameData.meaning && (
