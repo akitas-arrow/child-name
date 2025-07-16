@@ -38,9 +38,15 @@ const schema = z.object({
   reading: z
     .string()
     .min(1, "読み方は必須です")
-    .regex(/^[あ-ん]+$/, "ひらがなのみで入力してください"),
+    .regex(
+      /^[あ-ん・、]+$/,
+      "ひらがな、もしくは「・」「、」のみで入力してください"
+    ),
   gender: z.enum(["male", "female", "unisex"], "性別を選択してください"),
-  meaning: z.string().optional(),
+  meaning: z
+    .string()
+    .max(500, "理由・由来は500文字以内で入力してください")
+    .optional(),
   submitter_id: z.string().min(1, "提案者は必須です"),
 });
 
@@ -87,7 +93,12 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <Label htmlFor="name">名前</Label>
-            <Input id="name" {...register("name")} placeholder="例：心" />
+            <Input
+              id="name"
+              {...register("name")}
+              placeholder="例：心"
+              className={errors.name ? "border-red-500" : ""}
+            />
             {errors.name && (
               <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
             )}
@@ -118,7 +129,9 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
                 })
               }
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger
+                className={errors.gender ? "w-full border-red-500" : "w-full"}
+              >
                 <SelectValue placeholder="性別を選択してください" />
               </SelectTrigger>
               <SelectContent>
@@ -142,7 +155,11 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
                 setValue("submitter_id", val, { shouldValidate: true })
               }
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger
+                className={
+                  errors.submitter_id ? "w-full border-red-500" : "w-full"
+                }
+              >
                 <SelectValue placeholder="提案者を選択してください" />
               </SelectTrigger>
               <SelectContent>
@@ -167,7 +184,13 @@ export const NameSubmissionForm = ({ submitters }: Props) => {
               {...register("meaning")}
               placeholder="この名前を提案する理由や由来があれば教えてください"
               rows={3}
+              className={errors.meaning ? "border-red-500" : ""}
             />
+            {errors.meaning && (
+              <p className="text-sm text-red-500 mt-1">
+                {errors.meaning.message}
+              </p>
+            )}
           </div>
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
