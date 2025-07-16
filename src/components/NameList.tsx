@@ -118,7 +118,6 @@ export const NameList = ({ names }: NameListProps) => {
     "わ",
   ];
 
-  console.log({ names });
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -187,9 +186,12 @@ export const NameList = ({ names }: NameListProps) => {
             if (!groupNames || groupNames.length === 0) return null;
 
             return (
-              <div key={group} ref={(el) => {
-                sectionRefs.current[group] = el;
-              }}>
+              <div
+                key={group}
+                ref={(el) => {
+                  sectionRefs.current[group] = el;
+                }}
+              >
                 <h3 className="mb-4 pb-2 border-b">{group}行</h3>
                 <div className="grid gap-4">
                   {groupNames.map((name) => (
@@ -200,9 +202,11 @@ export const NameList = ({ names }: NameListProps) => {
             );
           })}
           {groupedNames["その他"] && groupedNames["その他"].length > 0 && (
-            <div ref={(el) => {
-              sectionRefs.current["その他"] = el;
-            }}>
+            <div
+              ref={(el) => {
+                sectionRefs.current["その他"] = el;
+              }}
+            >
               <h3 className="mb-4 pb-2 border-b">その他</h3>
               <div className="grid gap-4">
                 {groupedNames["その他"].map((name) => (

@@ -6,7 +6,10 @@ import { Baby } from "lucide-react";
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data: names } = await supabase.from("name_suggestions").select();
+  const { data: names } = await supabase
+    .from("name_suggestions")
+    .select()
+    .order("created_at", { ascending: false });
   const { data: submitters } = await supabase.from("submitters").select();
 
   if (!names || !submitters) {
